@@ -12,7 +12,7 @@ namespace ProjectEuler
         {
             ProjectEuler main = new ProjectEuler();
 
-            var result = main.SumOfPrimes(2000000);
+            var result = main.LatticePaths(20);
             Console.WriteLine(result);
         }
 
