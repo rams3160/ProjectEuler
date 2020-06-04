@@ -543,5 +543,182 @@ namespace ProjectEuler
 
             return grid[0, 0];
         }
+
+        public long PowerDigitSum(int number, int power)
+        {
+            BigInteger result = BigInteger.Pow(number, power);
+            var resultString = result.ToString();
+            long sum = 0;
+
+            foreach (var num in resultString)
+            {
+                sum = sum + long.Parse(num.ToString());
+            }
+
+            return sum;
+        }
+
+        public long NumberLetterCounts(int max)
+        {
+            List<string> words = new List<string>();
+            long count = 0;
+
+            for (int i = 1; i <= max; i++)
+            {
+                var word = NumberToWords(i);
+                words.Add(word);
+            }
+
+            foreach (var word in words)
+            {
+                count = count + word.Length;
+            }
+
+            return count;
+        }
+
+        public string NumberToWords(int number)
+        {
+            if (number == 0)
+                return "zero";
+
+            if (number < 0)
+                return "minus" + NumberToWords(Math.Abs(number));
+
+            string words = "";
+
+            if ((number / 1000000) > 0)
+            {
+                words += NumberToWords(number / 1000000) + "million";
+                number %= 1000000;
+            }
+
+            if ((number / 1000) > 0)
+            {
+                words += NumberToWords(number / 1000) + "thousand";
+                number %= 1000;
+            }
+
+            if ((number / 100) > 0)
+            {
+                words += NumberToWords(number / 100) + "hundred";
+                number %= 100;
+            }
+
+            if (number > 0)
+            {
+                if (words != "")
+                    words += "and";
+
+                var unitsMap = new[] { "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen" };
+                var tensMap = new[] { "zero", "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety" };
+
+                if (number < 20)
+                    words += unitsMap[number];
+                else
+                {
+                    words += tensMap[number / 10];
+                    if ((number % 10) > 0)
+                        words += unitsMap[number % 10];
+                }
+            }
+
+            return words;
+        }
+
+        public int MaximumPathSum(int[][] numsArray)
+        {
+            //This is the dataset for this problem, can paste in main to run again later.
+            //int[][] nums = new int[][]
+            //{
+            //    new int[] {75},
+            //    new int[] {95,64},
+            //    new int[] {17,47,82},
+            //    new int[] {18,35,87,10},
+            //    new int[] {20,04,82,47,65},
+            //    new int[] {19,01,23,75,03,34},
+            //    new int[] {88,02,77,73,07,63,67},
+            //    new int[] {99,65,04,28,06,16,70,92},
+            //    new int[] {41,41,26,56,83,40,80,70,33},
+            //    new int[] {41,48,72,33,47,32,37,16,94,29},
+            //    new int[] {53,71,44,65,25,43,91,52,97,51,14},
+            //    new int[] {70,11,33,28,77,73,17,78,39,68,17,57},
+            //    new int[] {91,71,52,38,17,14,91,43,58,50,27,29,48},
+            //    new int[] {63,66,04,68,89,53,67,30,73,16,69,87,40,31},
+            //    new int[] {04,62,98,27,23,09,70,98,73,93,38,53,60,04,23},
+            //};
+
+            int lines = numsArray.GetLength(0);
+
+            for (int i = lines - 2; i >= 0; i--)
+            {
+                for (int j = 0; j <= i; j++)
+                {
+                    numsArray[i][j] += Math.Max(numsArray[i+1][j], numsArray[i + 1][j + 1]);
+                }
+            }
+
+            return numsArray[0][0];
+
+        }
+
+        public long CountingSundays(int startYear, int endYear, int dayOfMonth = 0)
+        {
+            int sundays = 0;
+
+            if(dayOfMonth != 0)
+            {
+                for (int i = startYear; i <= endYear; i++)
+                {
+                    for (int month = 1; month <= 12; month++)
+                    {
+                        var dayOfWeek = new DateTime(i, month, dayOfMonth).DayOfWeek;
+                        if (dayOfWeek == DayOfWeek.Sunday)
+                        {
+                            sundays++;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (int year = startYear; year <= endYear; year++)
+                {
+                    for (int month = 1; month <= 12; month++)
+                    {
+                        var days = DateTime.DaysInMonth(year, month);
+                        for(int day = 1; day <= days; days++)
+                        {
+                            var dayOfWeek = new DateTime(year, month, day).DayOfWeek;
+                            if (dayOfWeek == DayOfWeek.Sunday)
+                            {
+                                sundays++;
+                            }
+                        }
+                    }
+                }
+            }
+            return sundays;
+        }
+
+        public long FactorialDigitSum(int number)
+        {
+            BigInteger factorial = 1;
+            long sum = 0;
+
+            for (int i = 2; i <= number; i++)
+            {
+                factorial = factorial * i;
+            }
+
+            var factString = factorial.ToString();
+            foreach(var digit in factString)
+            {
+                sum = sum + long.Parse(digit.ToString());
+            }
+
+            return sum;
+        }
+
     }
 }

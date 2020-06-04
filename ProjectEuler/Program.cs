@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using System.Security.Cryptography.X509Certificates;
@@ -12,8 +13,10 @@ namespace ProjectEuler
         {
             ProjectEuler main = new ProjectEuler();
 
-            var result = main.LatticePaths(20);
-            Console.WriteLine(result);
+
+
+            var result = main.FactorialDigitSum(100);
+           Console.WriteLine(result);
         }
 
     }
