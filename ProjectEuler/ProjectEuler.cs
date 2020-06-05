@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Reflection.Metadata;
@@ -654,7 +656,7 @@ namespace ProjectEuler
             {
                 for (int j = 0; j <= i; j++)
                 {
-                    numsArray[i][j] += Math.Max(numsArray[i+1][j], numsArray[i + 1][j + 1]);
+                    numsArray[i][j] += Math.Max(numsArray[i + 1][j], numsArray[i + 1][j + 1]);
                 }
             }
 
@@ -666,7 +668,7 @@ namespace ProjectEuler
         {
             int sundays = 0;
 
-            if(dayOfMonth != 0)
+            if (dayOfMonth != 0)
             {
                 for (int i = startYear; i <= endYear; i++)
                 {
@@ -687,7 +689,7 @@ namespace ProjectEuler
                     for (int month = 1; month <= 12; month++)
                     {
                         var days = DateTime.DaysInMonth(year, month);
-                        for(int day = 1; day <= days; days++)
+                        for (int day = 1; day <= days; days++)
                         {
                             var dayOfWeek = new DateTime(year, month, day).DayOfWeek;
                             if (dayOfWeek == DayOfWeek.Sunday)
@@ -712,9 +714,331 @@ namespace ProjectEuler
             }
 
             var factString = factorial.ToString();
-            foreach(var digit in factString)
+            foreach (var digit in factString)
             {
                 sum = sum + long.Parse(digit.ToString());
+            }
+
+            return sum;
+        }
+
+        public List<int> GetDivisors(int num, bool includeNum = true)
+        {
+            List<int> divisors = new List<int>();
+
+            if (includeNum)
+            {
+                for (int i = 1; i < Math.Ceiling(Math.Sqrt(num)); i++)
+                {
+                    if (num % i == 0)
+                    {
+                        var pair = num / i;
+                        divisors.Add(i);
+                        divisors.Add(pair);
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 2; i < Math.Ceiling(Math.Sqrt(num)); i++)
+                {
+                    if (num % i == 0)
+                    {
+                        var pair = num / i;
+                        divisors.Add(i);
+                        divisors.Add(pair);
+                    }
+                }
+                divisors.Add(1);
+            }
+
+
+            return divisors;
+        }
+
+        public int SumDivisors(int num, bool includeNum = true)
+        {
+            int sum = 0;
+
+            if (includeNum)
+            {
+                for (int i = 1; i < Math.Ceiling(Math.Sqrt(num)); i++)
+                {
+                    if (num % i == 0)
+                    {
+                        var pair = num / i;
+                        sum = sum + i + pair;
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 2; i < Math.Ceiling(Math.Sqrt(num)); i++)
+                {
+                    if (num % i == 0)
+                    {
+                        var pair = num / i;
+                        sum = sum + i + pair;
+                    }
+                }
+                sum += 1;
+            }
+
+            return sum;
+        }
+
+        public long SumOfAmicableNumbers(int max)
+        {
+            long sum = 0;
+            int num1;
+            int num2;
+
+            for (int i = 2; i <= max; i++)
+            {
+                num1 = SumDivisors(i, false);
+                if (num1 > i && num1 <= max)
+                {
+                    num2 = SumDivisors(num1, false);
+                    if (num2 == i)
+                    {
+                        sum += i + num1;
+                    }
+                }
+            }
+
+            return sum;
+        }
+
+        public List<string> ReadCSV(string path, char trimKey)
+        {
+            StreamReader r = new StreamReader(path);
+            string line = r.ReadToEnd();
+            r.Close();
+
+            List<string> names = line.Split(',').ToList();
+
+            names.Sort();
+
+            for(int i= 0; i < names.Count; i++)
+            {
+                names[i] = names[i].Trim(trimKey);
+            }
+
+            return names;
+        }
+
+        public BigInteger NameScore(List<string> names)
+        {
+
+            BigInteger sum = 0;
+
+            for(int i = 0; i < names.Count; i++)
+            {
+                var charScore = 0;
+                foreach(var character in names[i])
+                {
+                    charScore += Convert.ToInt32(character - 64);
+                }
+                sum = sum + (charScore * (i+1));
+            }
+
+            return sum;
+        }
+
+
+        public string LexicographicPermutation(int[] permutation,int speficiedPermutation)
+        {
+
+            int count = 1;
+            while (count < speficiedPermutation)
+            {
+                int N = permutation.Length;
+                int i = N - 1;
+                while (permutation[i - 1] >= permutation[i])
+                {
+                    i = i - 1;
+
+                }
+                int j = N;
+                while (permutation[j - 1] <= permutation[i - 1])
+                {
+                    j = j - 1;
+                }
+
+                swap(i - 1, j - 1);
+
+                i++;
+                j = N;
+                while (i < j) {
+                    swap(i - 1, j - 1);
+                    i++;
+                    j--;
+                }
+                count++;
+            }
+
+            string permNum = "";
+            for (int k = 0; k < permutation.Length; k++) {
+                permNum = permNum + permutation[k];
+            }
+
+            return permNum;
+
+            void swap(int i, int j)
+            {
+                int k = permutation[i];
+                permutation[i] = permutation[j];
+                permutation[j] = k;
+            }
+
+        }
+
+        public BigInteger FibonacciFinder(int n)
+        {
+            BigInteger firstnumber = 0, secondnumber = 1, result = 0;
+
+            if (n == 0) return 0; //To return the first Fibonacci number   
+            if (n == 1) return 1; //To return the second Fibonacci number   
+
+
+            for (int i = 2; i <= n; i++)
+            {
+                result = firstnumber + secondnumber;
+                firstnumber = secondnumber;
+                secondnumber = result;
+            }
+
+            return result;
+        }
+
+        public BigInteger FirstOccuranceFibonachi(int digits)
+        {
+            int i = 0;
+            int index = 2;
+            BigInteger limit = BigInteger.Pow(10, digits - 1);
+            BigInteger[] fib = new BigInteger[3];
+
+            fib[0] = 1;
+            fib[2] = 1;
+
+            while (fib[i] <= limit)
+            {
+                i = (i + 1) % 3;
+                index++;
+                fib[i] = fib[(i + 1) % 3] + fib[(i + 2) % 3];
+            }
+
+            return index;
+        }
+
+        public int[] ESieve(int upperLimit)
+        {
+
+            int sieveBound = (int)(upperLimit - 1) / 2;
+            int upperSqrt = ((int)Math.Sqrt(upperLimit) - 1) / 2;
+
+            BitArray PrimeBits = new BitArray(sieveBound + 1, true);
+
+            for (int i = 1; i <= upperSqrt; i++)
+            {
+                if (PrimeBits.Get(i))
+                {
+                    for (int j = i * 2 * (i + 1); j <= sieveBound; j += 2 * i + 1)
+                    {
+                        PrimeBits.Set(j, false);
+                    }
+                }
+            }
+
+            List<int> numbers = new List<int>((int)(upperLimit / (Math.Log(upperLimit) - 1.08366)));
+            numbers.Add(2);
+            for (int i = 1; i <= sieveBound; i++)
+            {
+                if (PrimeBits.Get(i))
+                {
+                    numbers.Add(2 * i + 1);
+                }
+            }
+
+            return numbers.ToArray();
+        }
+
+        private int sumOfFactorsPrime(int number, int[] primelist)
+        {
+            int n = number;
+            int sum = 1;
+            int p = primelist[0];
+            int j;
+            int i = 0;
+
+            while (p * p <= n && n > 1 && i < primelist.Length)
+            {
+                p = primelist[i];
+                i++;
+                if (n % p == 0)
+                {
+                    j = p * p;
+                    n = n / p;
+                    while (n % p == 0)
+                    {
+                        j = j * p;
+                        n = n / p;
+                    }
+                    sum = sum * (j - 1) / (p - 1);
+                }
+            }
+
+            //A prime factor larger than the square root remains, so add that
+            if (n > 1)
+            {
+                sum *= n + 1;
+            }
+            return sum - number;
+        }
+
+
+        public long NonAbundantSums()
+        {
+            const int limit = 28123;
+            List<int> abundent = new List<int>();
+            int[] primelist = ESieve((int)Math.Sqrt(limit));
+
+
+            long sum = 0;
+
+            // Find all abundant numbers
+            for (int i = 2; i <= limit; i++)
+            {
+                if (sumOfFactorsPrime(i, primelist) > i)
+                {
+                    abundent.Add(i);
+                }
+            }
+
+            // Make all the sums of two abundant numbers
+            bool[] canBeWrittenasAbundent = new bool[limit + 1];
+            for (int i = 0; i < abundent.Count; i++)
+            {
+                for (int j = i; j < abundent.Count; j++)
+                {
+                    if (abundent[i] + abundent[j] <= limit)
+                    {
+                        canBeWrittenasAbundent[abundent[i] + abundent[j]] = true;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+
+            //Sum the numbers which are not sums of two abundant numbers
+            for (int i = 1; i <= limit; i++)
+            {
+                if (!canBeWrittenasAbundent[i])
+                {
+                    sum += i;
+                }
             }
 
             return sum;
