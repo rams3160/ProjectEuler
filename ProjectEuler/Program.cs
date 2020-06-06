@@ -13,8 +13,9 @@ namespace ProjectEuler
         {
             ProjectEuler main = new ProjectEuler();
 
-            var result = main.NonAbundantSums();
+            var result = main.SumOfDigitPowers(5);
             Console.WriteLine(result);
+
 
         }
 

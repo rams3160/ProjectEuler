@@ -6,6 +6,7 @@ using System.Linq;
 using System.Numerics;
 using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace ProjectEuler
@@ -933,6 +934,7 @@ namespace ProjectEuler
 
         public int[] ESieve(int upperLimit)
         {
+            //found on math blog, i undeerstand the idea of a sieve but i need to understand code more.
 
             int sieveBound = (int)(upperLimit - 1) / 2;
             int upperSqrt = ((int)Math.Sqrt(upperLimit) - 1) / 2;
@@ -965,33 +967,32 @@ namespace ProjectEuler
 
         private int sumOfFactorsPrime(int number, int[] primelist)
         {
-            int n = number;
             int sum = 1;
-            int p = primelist[0];
-            int j;
+            int currentPrime = primelist[0];
             int i = 0;
+            int j;
 
-            while (p * p <= n && n > 1 && i < primelist.Length)
+            while (currentPrime * currentPrime <= number && number > 1 && i < primelist.Length)
             {
-                p = primelist[i];
+                currentPrime = primelist[i];
                 i++;
-                if (n % p == 0)
+                if (number % currentPrime == 0)
                 {
-                    j = p * p;
-                    n = n / p;
-                    while (n % p == 0)
+                    j = currentPrime * currentPrime;
+                    number = number / currentPrime;
+                    while (number % currentPrime == 0)
                     {
-                        j = j * p;
-                        n = n / p;
+                        j = j * currentPrime;
+                        number = number / currentPrime;
                     }
-                    sum = sum * (j - 1) / (p - 1);
+                    sum = sum * (j - 1) / (currentPrime - 1);
                 }
             }
 
             //A prime factor larger than the square root remains, so add that
-            if (n > 1)
+            if (number > 1)
             {
-                sum *= n + 1;
+                sum *= number + 1;
             }
             return sum - number;
         }
@@ -999,6 +1000,8 @@ namespace ProjectEuler
 
         public long NonAbundantSums()
         {
+            //from mathblog, need to unerstand this one more.
+            //limit given in problem
             const int limit = 28123;
             List<int> abundent = new List<int>();
             int[] primelist = ESieve((int)Math.Sqrt(limit));
@@ -1044,5 +1047,166 @@ namespace ProjectEuler
             return sum;
         }
 
+        public List<int> FractionToDecimal(int numerator, int divisor)
+        {
+            List<int> decimals = new List<int>();
+            var previousDigit = 0;
+
+            numerator = numerator % divisor * 10;
+            while (true)
+            {
+                var digit = numerator / divisor;
+                if ((decimals.Count > 1 && decimals[0] == digit) || digit == 0 || previousDigit == digit)
+                {
+                    break;
+                }
+                decimals.Add(digit);
+                previousDigit = digit;
+                numerator = numerator % divisor * 10;
+            }
+            return decimals;
+        }
+
+        public int LongestReciprocalCycle(int max)
+        {
+            int sequenceLength = 0;
+
+            for (int i = max; i > 1; i--)
+            {
+                if (sequenceLength >= i)
+                {
+                    break;
+                }
+
+                int[] decimals = new int[i];
+                int value = 1;
+                int position = 0;
+
+                while (decimals[value] == 0 && value != 0)
+                {
+                    decimals[value] = position;
+                    value *= 10;
+                    value %= i;
+                    position++;
+                }
+
+                if (position - decimals[value] > sequenceLength)
+                {
+                    sequenceLength = position - decimals[value];
+                }
+            }
+
+            return sequenceLength + 1;
+        }
+
+        public int QuadraticPrimes(int max)
+        {
+            int[] primes;
+            int aMax = 0;
+            int bMax = 0;
+            int nMax = 0;
+
+            primes = ESieve(87400);
+
+            for (int a = -max; a <= max; a++)
+            {
+                for (int b = -max; b <= max; b++)
+                {
+                    int n = 0;
+                    while (isPrime(Math.Abs(n * n + a * n + b)))
+                    {
+                        n++;
+                    }
+
+                    if (n > nMax)
+                    {
+                        aMax = a;
+                        bMax = b;
+                        nMax = n;
+                    }
+                }
+            }
+
+            return aMax * bMax;
+
+            bool isPrime(int testNumber)
+            {
+                int i = 0;
+                while (primes[i] <= testNumber)
+                {
+                    if (primes[i] == testNumber)
+                    {
+                        return true;
+                    }
+                    i++;
+                }
+                return false;
+            }
+        }
+
+        public double NumberSpiralSum(int size)
+        {
+            //remove special case: middle
+            var iterations = (size - 1) / 2;
+
+            double sum = 0;
+
+            for(int i = 1; i <= iterations; i++)
+            {
+                //formula is found by finding each corner and reducing terms.
+                //4(2n+1)^2 - 12n
+                var powTerm = 2 * i + 1;
+                var powResult = Math.Pow(powTerm, 2);
+                var result = (4 * powResult) - (12 * i);
+
+                sum = sum + result;
+            }
+
+            return sum + 1; //add special case: middle
+
+        }
+
+        public int DistinctTerm(int lowerLimit, int upperLimit)
+        {
+            List<double> terms = new List<double>();
+
+            for(int i = lowerLimit; i <= upperLimit; i++)
+            {
+                for (int j = lowerLimit; j <= upperLimit; j++){
+                    var term = Math.Pow(i, j);
+                    terms.Add(term);
+                }
+            }
+
+            return terms.Distinct().Count();
+        }
+
+        public double SumOfDigitPowers(int power)
+        {
+            //calcualte bounds
+            var largestPow = Math.Pow(9, power);
+            var largestPowString = largestPow.ToString();
+            var digitCount = (largestPowString.Length + 1) * largestPow;
+
+            double sum = 0;
+
+            for(int i = 1634; i < digitCount; i++)
+            {
+                var numberString = i.ToString();
+                double powSum = 0;
+                foreach( var number in numberString)
+                {
+                    var num = Int64.Parse(number.ToString());
+                    var pow = Math.Pow(num, power);
+                    powSum = powSum + pow;
+                }
+                if (powSum == i)
+                {
+                    sum = sum + powSum;
+                }
+            }
+
+            return sum;
+        }
     }
 }
