@@ -13,7 +13,7 @@ namespace ProjectEuler
         {
             ProjectEuler main = new ProjectEuler();
 
-            var result = main.SumOfDigitPowers(5);
+            var result = main.CircularPrimes(1000000);
             Console.WriteLine(result);
 
 

@@ -820,7 +820,7 @@ namespace ProjectEuler
 
             names.Sort();
 
-            for(int i= 0; i < names.Count; i++)
+            for (int i = 0; i < names.Count; i++)
             {
                 names[i] = names[i].Trim(trimKey);
             }
@@ -833,21 +833,21 @@ namespace ProjectEuler
 
             BigInteger sum = 0;
 
-            for(int i = 0; i < names.Count; i++)
+            for (int i = 0; i < names.Count; i++)
             {
                 var charScore = 0;
-                foreach(var character in names[i])
+                foreach (var character in names[i])
                 {
                     charScore += Convert.ToInt32(character - 64);
                 }
-                sum = sum + (charScore * (i+1));
+                sum = sum + (charScore * (i + 1));
             }
 
             return sum;
         }
 
 
-        public string LexicographicPermutation(int[] permutation,int speficiedPermutation)
+        public string LexicographicPermutation(int[] permutation, int speficiedPermutation)
         {
 
             int count = 1;
@@ -870,7 +870,8 @@ namespace ProjectEuler
 
                 i++;
                 j = N;
-                while (i < j) {
+                while (i < j)
+                {
                     swap(i - 1, j - 1);
                     i++;
                     j--;
@@ -879,7 +880,8 @@ namespace ProjectEuler
             }
 
             string permNum = "";
-            for (int k = 0; k < permutation.Length; k++) {
+            for (int k = 0; k < permutation.Length; k++)
+            {
                 permNum = permNum + permutation[k];
             }
 
@@ -1151,7 +1153,7 @@ namespace ProjectEuler
 
             double sum = 0;
 
-            for(int i = 1; i <= iterations; i++)
+            for (int i = 1; i <= iterations; i++)
             {
                 //formula is found by finding each corner and reducing terms.
                 //4(2n+1)^2 - 12n
@@ -1170,9 +1172,10 @@ namespace ProjectEuler
         {
             List<double> terms = new List<double>();
 
-            for(int i = lowerLimit; i <= upperLimit; i++)
+            for (int i = lowerLimit; i <= upperLimit; i++)
             {
-                for (int j = lowerLimit; j <= upperLimit; j++){
+                for (int j = lowerLimit; j <= upperLimit; j++)
+                {
                     var term = Math.Pow(i, j);
                     terms.Add(term);
                 }
@@ -1190,11 +1193,11 @@ namespace ProjectEuler
 
             double sum = 0;
 
-            for(int i = 1634; i < digitCount; i++)
+            for (int i = 1634; i < digitCount; i++)
             {
                 var numberString = i.ToString();
                 double powSum = 0;
-                foreach( var number in numberString)
+                foreach (var number in numberString)
                 {
                     var num = Int64.Parse(number.ToString());
                     var pow = Math.Pow(num, power);
@@ -1208,5 +1211,220 @@ namespace ProjectEuler
 
             return sum;
         }
+
+        public int CoinSums(int max)
+        {
+            int target = 100 * max;
+            int combinations = 0;
+
+            for (int twoPound = target; twoPound >= 0; twoPound -= 200)
+            {
+                for (int onePound = twoPound; onePound >= 0; onePound -= 100)
+                {
+                    for (int fiftyPence = onePound; fiftyPence >= 0; fiftyPence -= 50)
+                    {
+                        for (int twentyPence = fiftyPence; twentyPence >= 0; twentyPence -= 20)
+                        {
+                            for (int tenPence = twentyPence; tenPence >= 0; tenPence -= 10)
+                            {
+                                for (int fivePence = tenPence; fivePence >= 0; fivePence -= 5)
+                                {
+                                    for (int twoPence = fivePence; twoPence >= 0; twoPence -= 2)
+                                    {
+                                        combinations++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return combinations;
+        }
+
+        public bool IsNumberPandigital(int number)
+        {
+            var numString = number.ToString();
+            for (int i = 0; i < numString.Length; i++)
+            {
+                for (int j = i + 1; j < numString.Length; j++)
+                {
+                    if (numString[i] == numString[j])
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        public long PandigitalProducts()
+        {
+            //I DO NOT UNDERSTAND WHY THIS ISNT CORRECT, I HAVE UNIQUE SOLUTIONS MUST BE MISSING SOME RESTRAINT IN PROBLEM BUT I CANT ISOLATE.
+            //because XX * YYY = ZZZZ => 9999 is max
+            int max = 9999;
+            List<int> products = new List<int>();
+
+            for (int i = 2; i <= max; i++)
+            {
+                for (int j = 2; j <= max; j++)
+                {
+                    var product = i * j;
+                    var totalString = i.ToString() + j.ToString() + product.ToString();
+                    if(totalString.Length == 9)
+                    {
+                        var totalNum = Int32.Parse(totalString);
+                        if (IsNumberPandigital(totalNum))
+                        {
+                            products.Add(product);
+                        }
+                    }
+                }
+            }
+
+            List<int> Distinct = products.Distinct().ToList();
+            return Distinct.Sum();
+        }
+
+        public int DigitCancelingFractions()
+        {
+            // SOURCE = MATHBLOG.DK, NEED OWN SOLUTION
+            int denproduct = 1;
+            int nomproduct = 1;
+
+            for (int i = 1; i < 10; i++)
+            {
+                for (int den = 1; den < i; den++)
+                {
+                    for (int nom = 1; nom < den; nom++)
+                    {
+                        if ((nom * 10 + i) * den == nom * (i * 10 + den))
+                        {
+                            denproduct *= den;
+                            nomproduct *= nom;
+                        }
+                    }
+                }
+            }
+            denproduct /= gcd(nomproduct, denproduct);
+            return denproduct;
+
+            int gcd(int a, int b)
+            {
+                int y, x;
+
+                if (a > b)
+                {
+                    x = a;
+                    y = b;
+                }
+                else
+                {
+                    x = b;
+                    y = a;
+                }
+
+                while (x % y != 0)
+                {
+                    int temp = x;
+                    x = y;
+                    y = temp % x;
+                }
+
+                return y;
+            }
+        }
+
+        public int Factorial(int num)
+        {
+            if( num == 0)
+            {
+                return 1;
+            }
+
+            var fact = num;
+
+            for(int i = num -1; i > 0; i--)
+            {
+                fact = fact * i;
+            }
+
+            return fact;
+        }
+
+        public int DigitFactorials()
+        {
+            int sum = 0;
+            List<int> uniques = new List<int>();
+
+            //max = 9!*9 probably too big but can reduce if needed.
+            for(int i = 145; i < 35000000; i++)
+            {
+                var numString = i.ToString();
+                var digitSum = 0;
+
+                foreach(var num in numString)
+                {
+                    digitSum = digitSum + Factorial(Int32.Parse(num.ToString()));
+                }
+
+                if (digitSum == i) 
+                {
+                    uniques.Add(i);
+                }
+            }
+
+            return uniques.Sum();
+        }
+        public int CircularPrimes(int max)
+        {
+            int[] primes = ESieve(1000000);
+            List<int> circularPrimes = new List<int>();
+
+            for(int i = 0; i< primes.Length; i++)
+            {
+                if (IsCircularPrime(primes[i]))
+                {
+                    circularPrimes.Add(i);
+                }
+            }
+
+            return circularPrimes.Count() + 2; //add back two special cases;
+        }
+
+        public bool IsCircularPrime(int num)
+        {
+            var numString = num.ToString();
+            var count = numString.Length;
+
+            if( numString.Contains('2') || numString.Contains('5') )
+            {
+                return false;
+            }
+            else
+            {
+                var number = num;
+                while (true)
+                {
+                    if (!isPrime(number))
+                    {
+                        return false;
+                    }
+
+                    // Following three lines generates a 
+                    // circular permutation of a number. 
+                    int rem = number % 10;
+                    int dev = number / 10;
+                    number = (int)((Math.Pow(10, count - 1)) * rem + dev);
+
+                    if (number == num)
+                        break;
+                }
+
+                return true;
+            }
+        }
+
     }
 }
